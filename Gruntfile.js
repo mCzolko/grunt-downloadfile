@@ -32,8 +32,18 @@ module.exports = function(grunt) {
     downloadfile: {
       options: {},
       files: [
-        'http://nodejs.org/dist/v0.10.20/node-v0.10.20.tar.gz',
-        'http://nodejs.org/dist/v0.10.2/node-v0.10.2.tar.gz'
+        {
+          url: 'http://nodejs.org/dist/v0.10.20/node-v0.10.20.tar.gz',
+          name: 'newest.tar.gz'
+        },
+        {
+          url: 'http://nodejs.org/dist/v0.10.4/node-v0.10.4.tar.gz',
+          name: 'middle.tar.gz'
+        },
+        {
+          url: 'http://nodejs.org/dist/v0.10.2/node-v0.10.2.tar.gz',
+          name: 'older.tar.gz'
+        }
       ],
     },
 

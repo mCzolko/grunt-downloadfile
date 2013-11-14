@@ -14,93 +14,177 @@ var sys = require("sys"),
 
 module.exports = function(grunt) {
 
+
   grunt.registerMultiTask('downloadfile', 'The best Grunt plugin ever.', function() {
     // Merge task-specific and/or target-specific options with these defaults.
     var options = this.options({
+      async: true,
       dest: './',
       port: 80,
       method: 'GET'
     });
 
-    var done = this.async();
 
-    var createRequestParams = function(fileUrl) {
-      return {
-        port: options.port,
-        method: options.method,
-        host: url.parse(fileUrl).hostname,
-        path: url.parse(fileUrl).pathname
-      };
+    var done = this.async();
+    var files = [];
+    var running = false;
+
+
+    var complete = function() {
+      sys.puts("\033[<" + (files.length * 2) + ">B");
+      done();
     };
 
-    var files = [];
 
-    var downloadNext = function() {
-      var file = files.shift();
+    var downloadNextSync = function() {
+      var file = false;
+      files.forEach(function (fileObject) {
+        if (!fileObject.downloaded && !fileObject.downloading) {
+          file = fileObject;
+        }
+      });
       if (file) {
-        file.end();
+        file['request'] = createRequest(file);
+        file.request.end();
       } else {
-        done();
+        complete();
       }
     };
 
-    var chunkedResponse = function(filename, response) {
-      var downloadfile = fs.createWriteStream(filename, {'flags': 'a'});
-      var size = response.headers['content-length'];
-      var dlprogress = 0;
 
+    var isItDone = function() {
+      var downloded = files.filter(function (file) {
+       return !file.downloaded;
+      });
+      return !downloded.length;
+    };
+
+
+    var downloadNext = function() {
+      if (options.async) {
+        if (isItDone()) {
+          sys.puts("\033[u");
+          complete();
+        } else {
+          if (!running) {
+            running = true;
+            files.forEach(function (file) {
+              file['request'] = createRequest(file);
+              file.request.end();
+            });
+          }
+        }
+      } else {
+        downloadNextSync();
+      }
+    };
+
+    var notifyOne = function(file) {
       grunt.log.write(
         "Downloading file: " +
-        filename.cyan +
+        file.name.cyan +
         " (" +
-        Math.ceil(response.headers['content-length'] / 1000) +
-        " Kb)\n\n");
+        Math.ceil(file.size / 1000) +
+        " Kb)\n");
+
+      var prc = Math.floor(file.dlprogress * 100 / file.size);
+      var pprc = prc / 2.5;
+      var strprc = "";
+      for (var i = 0; i < 40; i++) {
+        if (pprc > i) {
+          strprc += "=".green;
+        } else {
+          strprc += " ";
+        }
+      }
+
+      if (file.size === 0) {
+        prc = 0;
+      }
+
+      sys.puts("\033[K["+ strprc +"]  " + prc.toString() + "%");
+
+    };
+
+
+    var notify = function() {
+      files.forEach(notifyOne);
+      sys.puts("\033[<" + (files.length * 2 + 1) + ">A");
+    };
+
+
+
+    var chunkedResponse = function(file, response) {
+      file.downloading = true;
+
+      var downloadfile = fs.createWriteStream(file.name, {'flags': 'a'});
+
+      file['size'] = response.headers['content-length'];
 
       response.on('data', function (chunk) {
-        dlprogress += chunk.length;
+        file.dlprogress += chunk.length;
         downloadfile.write(chunk);
-
-        var prc = Math.floor(dlprogress * 100 / size);
-        var pprc = prc / 2.5;
-        var strprc = "";
-        for (var i = 0; i < 40; i++) {
-            if (pprc > i) {
-                strprc += "=".red;
-            } else {
-                strprc += " ";
-            }
-        }
-
-        sys.puts("\033[<1>A[" + strprc + "]  " + prc.toString().green + "%".green);
+        notify();
       });
 
       response.on("end", function() {
         downloadfile.end();
+        file.downloaded = true;
+        file.downloading = false;
         downloadNext();
       });
     };
 
 
-    var createRequest = function(fileUrl) {
-      return http.request(createRequestParams(fileUrl), function (response) {
-        chunkedResponse(getFileName(fileUrl), response);
+    var createRequest = function(file) {
+      file['host'] = url.parse(file.url).hostname;
+      file['path'] = url.parse(file.url).pathname;
+
+      return http.request(file, function (response) {
+        chunkedResponse(file, response);
       });
     };
 
-    var downloadFile = function(fileUrl) {
-      files.push(createRequest(fileUrl));
+
+    var downloadFile = function(file) {
+      if (typeof file === 'string') {
+        var fileUrl = file;
+        file = {
+          url: fileUrl
+        };
+      }
+
+      if (!file.dest) {
+        file['dest'] = options.dest;
+      }
+      if (!file.port) {
+        file['port'] = options.port;
+      }
+      if (!file.method) {
+        file['method'] = options.method;
+      }
+      if (!file.method) {
+        file['method'] = options.method;
+      }
+      if (!file.name) {
+        file['name'] = url.parse(file.url).pathname.split("/").pop();
+      }
+
+      file['downloaded'] = false;
+      file['downloading'] = false;
+      file['dlprogress'] = 0;
+      file['size'] = 0;
+
+      files.push(file);
     };
 
-    var getFileName = function(fileUrl) {
-      return url.parse(fileUrl).pathname.split("/").pop();
-    };
 
-    // Iterate over all specified file groups.
     this.files.forEach(function(f) {
-      f.orig.src.map(function(fileUrl) {
-        downloadFile(fileUrl);
+      f.orig.src.map(function(file) {
+        downloadFile(file);
       });
     });
+
 
     downloadNext();
 
