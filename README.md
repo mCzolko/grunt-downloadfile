@@ -25,12 +25,10 @@ In your project's Gruntfile, add a section named `downloadfile` to the data obje
 ```js
 grunt.initConfig({
   downloadfile: {
-    options: {
-      // Task-specific options go here.
-    },
-    your_target: {
-      // Target-specific file lists and/or options go here.
-    },
+    files: [
+      'http://nodejs.org/dist/v0.10.20/node-v0.10.20.tar.gz',
+      'http://nodejs.org/dist/v0.10.2/node-v0.10.2.tar.gz'
+    ]
   },
 })
 ```
