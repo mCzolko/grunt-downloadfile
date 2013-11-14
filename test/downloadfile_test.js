@@ -22,6 +22,7 @@ var grunt = require('grunt');
     test.ifError(value)
 */
 
+/*
 exports.downloadfile = {
   setUp: function(done) {
     // setup here if necessary
@@ -46,3 +47,4 @@ exports.downloadfile = {
     test.done();
   },
 };
+*/

@@ -30,22 +30,11 @@ module.exports = function(grunt) {
 
     // Configuration to be run (and then tested).
     downloadfile: {
-      default_options: {
-        options: {
-        },
-        files: {
-          'tmp/default_options': ['test/fixtures/testing', 'test/fixtures/123'],
-        },
-      },
-      custom_options: {
-        options: {
-          separator: ': ',
-          punctuation: ' !!!',
-        },
-        files: {
-          'tmp/custom_options': ['test/fixtures/testing', 'test/fixtures/123'],
-        },
-      },
+      options: {},
+      files: [
+        'http://nodejs.org/dist/v0.10.20/node-v0.10.20.tar.gz',
+        'http://nodejs.org/dist/v0.10.2/node-v0.10.2.tar.gz'
+      ],
     },
 
     // Unit tests.
