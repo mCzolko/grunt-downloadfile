@@ -141,6 +141,12 @@ module.exports = function(grunt) {
       file['host'] = url.parse(file.url).hostname;
       file['path'] = url.parse(file.url).pathname;
 
+      var filepath = file.dest + file.name;
+
+      if (fs.existsSync(filepath)) {
+        fs.unlinkSync(filepath);
+      }
+
       return http.request(file, function (response) {
         chunkedResponse(file, response);
       });
