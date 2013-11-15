@@ -82,6 +82,7 @@ module.exports = function(grunt) {
     var notifyOne = function(file) {
       grunt.log.write(
         "Downloading file: " +
+        file.dest.cyan +
         file.name.cyan +
         " (" +
         Math.ceil(file.size / 1000) +
@@ -117,7 +118,7 @@ module.exports = function(grunt) {
     var chunkedResponse = function(file, response) {
       file.downloading = true;
 
-      var downloadfile = fs.createWriteStream(file.name, {'flags': 'a'});
+      var downloadfile = fs.createWriteStream(file.dest + file.name, {'flags': 'a'});
 
       file['size'] = response.headers['content-length'];
 
@@ -170,12 +171,22 @@ module.exports = function(grunt) {
         file['name'] = url.parse(file.url).pathname.split("/").pop();
       }
 
+      var dest = file['dest'];
+      if (dest[dest.length] !== '/') {
+        file['dest'] += '/';
+      }
+
       file['downloaded'] = false;
       file['downloading'] = false;
       file['dlprogress'] = 0;
       file['size'] = 0;
 
-      files.push(file);
+      if (fs.lstatSync(file.dest).isDirectory()) {
+        files.push(file);
+      } else {
+        grunt.log.error('"'+ file.dest +'" is not a directory!');
+      }
+
     };
 
 

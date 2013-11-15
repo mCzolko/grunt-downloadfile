@@ -30,7 +30,9 @@ module.exports = function(grunt) {
 
     // Configuration to be run (and then tested).
     downloadfile: {
-      options: {},
+      options: {
+        dest: 'temp'
+      },
       files: [
         {
           url: 'http://nodejs.org/dist/v0.10.20/node-v0.10.20.tar.gz',
