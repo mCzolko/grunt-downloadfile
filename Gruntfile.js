@@ -28,23 +28,26 @@ module.exports = function(grunt) {
       tests: ['tmp'],
     },
 
+    // Connect server just for simulation internet behaviour.
+    connect: {
+      test: {
+        options: {
+          port: 9876,
+          base: 'test/fixtures'
+        }
+      }
+    },
+
     // Configuration to be run (and then tested).
     downloadfile: {
       options: {
-        dest: 'temp'
+        dest: 'tmp'
       },
       files: [
         {
-          url: 'http://nodejs.org/dist/v0.10.20/node-v0.10.20.tar.gz',
-          name: 'newest.tar.gz'
-        },
-        {
-          url: 'http://nodejs.org/dist/v0.10.4/node-v0.10.4.tar.gz',
-          name: 'middle.tar.gz'
-        },
-        {
-          url: 'http://nodejs.org/dist/v0.10.2/node-v0.10.2.tar.gz',
-          name: 'older.tar.gz'
+          url: 'http://localhost/octopus.png',
+          port: 9876,
+          name: 'image.png'
         }
       ],
     },
@@ -63,10 +66,11 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-nodeunit');
+  grunt.loadNpmTasks('grunt-contrib-connect');
 
   // Whenever the "test" task is run, first clean the "tmp" dir, then run this
   // plugin's task(s), then test the result.
-  grunt.registerTask('test', ['clean', 'downloadfile', 'nodeunit']);
+  grunt.registerTask('test', ['clean', 'connect', 'downloadfile', 'nodeunit']);
 
   // By default, lint and run all tests.
   grunt.registerTask('default', ['jshint', 'test']);

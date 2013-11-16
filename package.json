@@ -1,7 +1,7 @@
 {
   "name": "grunt-downloadfile",
   "description": "The best Grunt plugin ever.",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "homepage": "https://github.com/mCzolko/grunt-downloadfile",
   "author": {
     "name": "Michael Czolko",
@@ -31,7 +31,8 @@
     "grunt-contrib-jshint": "~0.6.0",
     "grunt-contrib-clean": "~0.4.0",
     "grunt-contrib-nodeunit": "~0.2.0",
-    "grunt": "~0.4.1"
+    "grunt": "~0.4.1",
+    "grunt-contrib-connect": "~0.5.0"
   },
   "peerDependencies": {
     "grunt": "~0.4.0"
