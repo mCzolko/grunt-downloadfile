@@ -81,7 +81,7 @@ module.exports = function(grunt) {
     var notifyOne = function(file) {
       grunt.log.write(
         "Downloading file: " +
-        file.filepath.cyan +
+        file.filePath.cyan +
         " (" +
         Math.ceil(file.size / 1000) +
         " Kb)\n");
@@ -116,7 +116,7 @@ module.exports = function(grunt) {
     var chunkedResponse = function(file, response) {
       file.downloading = true;
 
-      var downloadfile = fs.createWriteStream(file.filepath, {'flags': 'a'});
+      var downloadfile = fs.createWriteStream(file.tmpPath, {'flags': 'a'});
 
       file['size'] = response.headers['content-length'];
 
@@ -128,6 +128,7 @@ module.exports = function(grunt) {
 
       response.on("end", function() {
         downloadfile.end();
+        fs.renameSync(file.tmpPath, file.filePath)
         file.downloaded = true;
         file.downloading = false;
         downloadNext();
@@ -139,10 +140,19 @@ module.exports = function(grunt) {
       file['host'] = url.parse(file.url).hostname;
       file['path'] = url.parse(file.url).pathname;
 
-      var filepath = file.dest + file.name;
+      if (fs.existsSync(file.filePath)) {
+        grunt.log.writeln('skip download: file exists ' + file.filePath);
 
-      if (fs.existsSync(filepath)) {
-        fs.unlinkSync(filepath);
+        return {
+          'end':function() {
+            file.downloaded = true;
+            file.downloading = false;
+            downloadNext();
+        }};
+      }
+
+      if (fs.existsSync(file.tmpPath)) {
+        fs.unlinkSync(file.tmpPath);
       }
 
       return http.request(file, function (response) {
@@ -179,10 +189,11 @@ module.exports = function(grunt) {
       file['downloading'] = false;
       file['dlprogress'] = 0;
       file['size'] = 0;
-      file['filepath'] = path.join(file.dest, file.name);
+      file['filePath'] = path.join(file.dest, file.name);
+      file['tmpPath'] = path.join(file.dest,'.' + file.name);
 
       // Create the destination directory
-      var fileDir = path.dirname(file.filepath);
+      var fileDir = path.dirname(file.filePath);
       grunt.file.mkdir(fileDir);
 
       files.push(file);
