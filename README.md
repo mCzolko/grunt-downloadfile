@@ -1,6 +1,7 @@
 # grunt-downloadfile
 
-> The best Grunt plugin ever.
+> Downloading files anywhere from internet world!.
+> ![ScreenShot](http://photos-4.dropbox.com/t/0/AAAcYlDi0slRatDnqn_JXSZxaU_C3B9NmiesJhsDYKFC1w/12/22904342/png/1024x768/3/1384794000/0/2/Screenshot%202013-11-14%2015.11.37.png/In7WCHu2FYHpF0lVlhzUlCFfoIWJ3cBVNvneB8pWwv0)
 
 ## Getting Started
 This plugin requires Grunt `~0.4.1`
@@ -33,52 +34,48 @@ grunt.initConfig({
 })
 ```
 
+### Per file configuration
+If you want more configuration.
+```js
+grunt.initConfig({
+  downloadfile: {
+      files: [
+        {
+          url: 'http://localhost/octopus.png',
+          port: 9876,
+          dest: 'tmp',
+          name: 'image.png'
+        }
+      ]
+  },
+})
+```
+
 ### Options
 
-#### options.separator
+#### options.async
+Type: `Boolean`
+Default value: `true`
+
+Provides you option to download multiple files asynchronous or file after file.
+
+#### options.dest
 Type: `String`
-Default value: `',  '`
+Default value: `'./'`
 
-A string value that is used to do something with whatever.
+Destination of downloaded files. If folder doesn't exists, grunt will create it.
 
-#### options.punctuation
+#### options.port
+Type: `Number`
+Default value: `80`
+
+Specifies which port will be used for connecting to host.
+
+#### options.method
 Type: `String`
-Default value: `'.'`
+Default value: `'GET'`
 
-A string value that is used to do something else with whatever else.
-
-### Usage Examples
-
-#### Default Options
-In this example, the default options are used to do something with whatever. So if the `testing` file has the content `Testing` and the `123` file had the content `1 2 3`, the generated result would be `Testing, 1 2 3.`
-
-```js
-grunt.initConfig({
-  downloadfile: {
-    options: {},
-    files: {
-      'dest/default_options': ['src/testing', 'src/123'],
-    },
-  },
-})
-```
-
-#### Custom Options
-In this example, custom options are used to do something else with whatever else. So if the `testing` file has the content `Testing` and the `123` file had the content `1 2 3`, the generated result in this case would be `Testing: 1 2 3 !!!`
-
-```js
-grunt.initConfig({
-  downloadfile: {
-    options: {
-      separator: ': ',
-      punctuation: ' !!!',
-    },
-    files: {
-      'dest/default_options': ['src/testing', 'src/123'],
-    },
-  },
-})
-```
+HTTP method. Only GET is supported now.
 
 ## Contributing
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
