@@ -116,19 +116,19 @@ module.exports = function(grunt) {
     var chunkedResponse = function(file, response) {
       file.downloading = true;
 
-      var downloadfile = fs.createWriteStream(file.tmpPath, {'flags': 'a'});
+      var downloadfile = fs.openSync(file.tmpPath, 'w');
 
       file['size'] = response.headers['content-length'];
 
       response.on('data', function (chunk) {
         file.dlprogress += chunk.length;
-        downloadfile.write(chunk);
+        fs.writeSync(downloadfile, chunk);
         notify();
       });
 
       response.on("end", function() {
-        downloadfile.end();
-        fs.renameSync(file.tmpPath, file.filePath)
+        fs.closeSync(downloadfile);
+        fs.renameSync(file.tmpPath, file.filePath);
         file.downloaded = true;
         file.downloading = false;
         downloadNext();
