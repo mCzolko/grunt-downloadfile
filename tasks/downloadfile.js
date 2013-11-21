@@ -112,27 +112,21 @@ module.exports = function(grunt) {
     };
 
 
-
-    var chunkedResponse = function(file, response) {
+    var chunkedResponse = function (file, response) {
       file.downloading = true;
-
-      var downloadfile = fs.openSync(file.tmpPath, 'w');
+      var downloadfile = fs.createWriteStream(file.tmpPath, {'flags': 'w'});
 
       file['size'] = response.headers['content-length'];
 
-      response.on('data', function (chunk) {
-        file.dlprogress += chunk.length;
-        fs.writeSync(downloadfile, chunk);
-        notify();
+      response.on('end', function () {
+        downloadfile.end(function () {
+          fs.renameSync(file.tmpPath, file.filePath);
+          file.downloaded = true;
+          file.downloading = false;
+          downloadNext();
+        });
       });
-
-      response.on("end", function() {
-        fs.closeSync(downloadfile);
-        fs.renameSync(file.tmpPath, file.filePath);
-        file.downloaded = true;
-        file.downloading = false;
-        downloadNext();
-      });
+      response.pipe(downloadfile);
     };
 
 
