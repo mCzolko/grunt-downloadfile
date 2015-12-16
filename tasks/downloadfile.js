@@ -21,7 +21,7 @@ module.exports = function(grunt) {
       async: true,
       dest: './',
       port: 80,
-      method: 'GET',
+      method: 'GET'
     });
 
 
