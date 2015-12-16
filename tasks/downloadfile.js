@@ -21,7 +21,8 @@ module.exports = function(grunt) {
       async: true,
       dest: './',
       port: 80,
-      method: 'GET'
+      method: 'GET',
+      overwrite: false,
     });
 
 
@@ -134,7 +135,7 @@ module.exports = function(grunt) {
       file['host'] = url.parse(file.url).hostname;
       file['path'] = url.parse(file.url).pathname;
 
-      if (fs.existsSync(file.filePath)) {
+      if (fs.existsSync(file.filePath) && !overwrite) {
         grunt.log.writeln('skip download: file exists ' + file.filePath);
 
         return {
