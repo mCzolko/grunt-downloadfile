@@ -134,7 +134,10 @@ module.exports = function(grunt) {
       file['host'] = url.parse(file.url).hostname;
       file['path'] = url.parse(file.url).pathname;
 
-      if (fs.existsSync(file.filePath)) {
+      if (file.overwrite == undefined) {
+        file.overwrite = false;
+      }
+      if (fs.existsSync(file.filePath) && !file.overwrite) {
         grunt.log.writeln('skip download: file exists ' + file.filePath);
 
         return {
