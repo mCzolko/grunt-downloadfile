@@ -77,6 +77,12 @@ Default value: `'GET'`
 
 HTTP method. Only GET is supported now.
 
+#### options.overwrite
+Type: `Boolean`
+Default value: `true`
+
+You can specify to overwrite the file if it already exist.
+
 ## Contributing
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
 
