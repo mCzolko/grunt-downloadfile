@@ -1,7 +1,7 @@
 {
   "name": "grunt-downloadfile",
   "description": "Download files via Grunt",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "homepage": "https://github.com/mCzolko/grunt-downloadfile",
   "author": {
     "name": "Michael Czolko",
