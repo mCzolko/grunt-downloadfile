@@ -41,15 +41,11 @@ module.exports = function(grunt) {
     // Configuration to be run (and then tested).
     downloadfile: {
       options: {
-        dest: 'tmp'
+        dest: './tmp'
       },
-      files: [
-        {
-          url: 'http://localhost/octopus.png',
-          port: 9876,
-          name: 'image.png'
-        }
-      ],
+      files: {
+        'image.png': 'http://localhost:9876/octopus.png'
+      },
     },
 
     // Unit tests.
