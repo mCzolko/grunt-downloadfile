@@ -28,9 +28,16 @@ module.exports = function(grunt) {
 
     var downloadFile = (fileName, url) => new Promise((resolve) => {
       var file = fs.createWriteStream(options.dest + '/' + fileName);
-      grunt.log.writeln('Downloading '['cyan'] + fileName + ' from '['cyan'] + url);
 
       (isHttps(url) ? https : http).get(url, response => {
+        var isRedirect = response.statusCode === 302;
+        if (isRedirect) {
+          var newUrl = response.headers.location;
+          grunt.log.writeln('Redirect '['cyan'] + url + ' to '['cyan'] + newUrl);
+          return downloadFile(fileName, newUrl).then(resolve);
+        }
+        grunt.log.writeln('Downloading '['cyan'] + fileName + ' from '['cyan'] + url);
+
         response.pipe(file);
         file.on('finish', () => file.close(resolve));
       }).on('error', err => { // Handle errors
