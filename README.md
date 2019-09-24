@@ -26,7 +26,8 @@ In your project's Gruntfile, add a section named `downloadfile` to the data obje
 grunt.initConfig({
   downloadfile: {
     options: {
-      dest: './node-versions'
+      dest: './node-versions',
+      overwriteEverytime: false
     },
     files: {
       'node-v0.10.20.tar.gz': 'http://nodejs.org/dist/v0.10.20/node-v0.10.20.tar.gz',
@@ -44,6 +45,13 @@ Type: `String`
 Default value: `'./'`
 
 Destination of downloaded files. If the folder doesn't exists grunt will create it.
+
+#### options.overwriteEverytime
+
+Type: `Boolean`
+Default value: `false`
+
+In case the download file is already present skip downloading. In case you want to overwrite file everytime pass `true`
 
 ## Contributing
 

@@ -16,7 +16,8 @@ module.exports = function(grunt) {
   grunt.registerMultiTask('downloadfile', 'Download files without stress', function() {
     var done = this.async();
     var options = this.options({
-      dest: './'
+      dest: './',
+      overwriteEverytime: false
     });
 
     isHttps = (url) => nodeUrl.parse(url).protocol.indexOf('https') !== -1;
@@ -42,6 +43,14 @@ module.exports = function(grunt) {
 
     files.forEach(file => {
       var url = this.data[file];
+
+      if (!options.overwriteEverytime) {
+        if (fs.existsSync(options.dest + '/' + file)) {
+          grunt.log.writeln('File ' + file['cyan'] + ' exists, skipping download');
+          return;
+        }
+      }
+
       promises.push(downloadFile(file, url));
     });
 
